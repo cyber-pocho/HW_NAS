@@ -8,8 +8,6 @@ from abc import ABC, abstractmethod
 from hardware.predictor import HardwarePredictor
 from core.ops.operations import OPS
 
-# src/operations
-
 class MixedOp(nn.Module):
     """
     MixedOp
@@ -38,7 +36,6 @@ class MixedOp(nn.Module):
         for op_name in operations:
             op = OPS[op_name](C, stride)
             self._ops.append(op)
-    
     def forward(self, x: torch.Tensor, weights: torch.Tensor) -> torch.Tensor:
         """Forward pass with architecture weights"""
         return sum(w * op(x) for w, op in zip(weights, self._ops))

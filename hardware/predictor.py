@@ -5,6 +5,7 @@ from typing import Dict, List, Tuple, Optional, Union
 from dataclasses import dataclass
 from abc import ABC, abstractmethod
 
+@dataclass
 class HardwarePredictor: 
     """
 HardwarePredictor
@@ -86,7 +87,14 @@ Methods:
 # costs = predictor.predict_costs(arch, input_shape)
 # print(costs)
 
-
+@dataclass
+class HardwareConstraints:
+    """Hardware constraints specifications"""
+    max_latency: float=100.0
+    max_memory: float=50.0
+    max_flops: float=300.0
+    max_energy: float=1000.0
+    platform: str = 'mobile'
 
 
 
