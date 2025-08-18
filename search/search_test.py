@@ -31,7 +31,7 @@ def main_example():
     config = create_default_config()
     #initialize components
     search_space = SearchSpace(config['search_space'])
-    hardware_predictor = HardwarePredictor(config['hardware']['platforms'])
+    hardware_predictor = HardwarePredictor(config['hardware']['platform'])
     constraints = HardwareConstraints(**config['hardware'])
     #create supernet
     supernet = SuperNet(search_space, input_channels=3, num_classes=10)
@@ -49,9 +49,11 @@ def main_example():
 if __name__ == "__main__": 
     trainer, searcher, supernet = main_example()
 
-    sample_arch = supernet.sample_subnet('mobile')
+    sample_arch = supernet.sample_subnet()
     print(f"Sample architecture: {sample_arch}")
     #sample archs
     predictor = HardwarePredictor('mobile')
     costs = predictor.predict_costs(sample_arch, (1,3,32,32))
     print(f"hardware costs: {costs}")
+
+# TO BE TESTED!
