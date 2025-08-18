@@ -98,39 +98,46 @@ class DARTSSearcher:
         
         return best_arch
 
-def test():
-    search_space = SearchSpace({
-        'operations': ['conv3x3', 'conv5x5', 'maxpool3x3'],
-        'num_layers': 4,
-        'channels': [16, 32, 64],
-        'reduce_layers': [2]
-    })
-    op_dict = {
-        "conv3x3": lambda C_in, C_out, stride=1: nn.Conv2d(
-            C_in, C_out, kernel_size=3, stride=stride, padding=1, bias=False
-        ),
-        "conv5x5": lambda C_in, C_out, stride=1: nn.Conv2d(
-            C_in, C_out, kernel_size=5, stride=stride, padding=2, bias=False
-        ),
-        "maxpool3x3": lambda C_in, C_out, stride=1: nn.MaxPool2d(
-            kernel_size=3, stride=stride, padding=1
-        ),
-    }
-    supernet = SuperNet(search_space, op_dict) 
-    hardware_predictor = HardwarePredictor()
-    constraints = HardwareConstraints(max_latency=50.0, max_memory=200.0, max_flops=1e8, max_energy=100.0)
 
-    searcher = DARTSSearcher(supernet, hardware_predictor, constraints, lambda_hw=0.05)
+#test
 
-    #validation data (not to be used)
-    train_data = torch.randn(8,3,32,32)
-    train_targets=torch.randint(0,10,(8,))
-    valid_data=torch.randn(8,3,32,32)
-    valid_targets=torch.randint(0,10,(8,))
+# def test():
+#     search_space = SearchSpace({
+#         'operations': ['conv3x3', 'conv5x5', 'maxpool3x3'],
+#         'num_layers': 4,
+#         'channels': (16, 32, 64),
+#         'reduce_layers': [2]
+#     })
+#     op_dict = {
+#         "conv3x3": lambda C_in, C_out, stride=1: nn.Conv2d(
+#             C_in, C_out, kernel_size=3, stride=stride, padding=1, bias=False
+#         ),
+#         "conv5x5": lambda C_in, C_out, stride=1: nn.Conv2d(
+#             C_in, C_out, kernel_size=5, stride=stride, padding=2, bias=False
+#         ),
+#         "maxpool3x3": lambda C_in, C_out, stride=1: nn.MaxPool2d(
+#             kernel_size=3, stride=stride, padding=1
+#         ),
+#     }
+#     supernet = SuperNet(search_space, op_dict) 
+#     hardware_predictor = HardwarePredictor()
+#     constraints = HardwareConstraints(max_latency=50.0, max_memory=200.0, max_flops=1e8, max_energy=100.0)
 
-    metrics = searcher.search_step(train_data, train_targets, valid_data, valid_targets)
-    print("Search step metrics ", metrics)
+#     searcher = DARTSSearcher(supernet, hardware_predictor, constraints, lambda_hw=0.05)
 
-    best_arch = searcher.get_best_architecture()
-    print("Best architecture found", best_arch)
-test()
+#     #validation data (not to be used)
+#     train_data = torch.randn(8,3,32,32)
+#     train_targets=torch.randint(0,10,(8,))
+#     valid_data=torch.randn(8,3,32,32)
+#     valid_targets=torch.randint(0,10,(8,))
+
+#     metrics = searcher.search_step(train_data, train_targets, valid_data, valid_targets)
+#     print("Search step metrics ", metrics)
+
+#     best_arch = searcher.get_best_architecture()
+#     print("Best architecture found", best_arch)
+# test()
+
+# cd /c/Users/Famil/Desktop/hw_nas
+# export PYTHONPATH=$PWD:$PYTHONPATH
+# python search/darts_searcher.py

@@ -60,7 +60,7 @@ class SuperNet(nn.Module):
         current_channels = self.search_space.channels[0]
 
         #stem layer
-        self.stem=nn.Sequential(
+        self.stem = nn.Sequential(
             nn.Conv2d(input_channels, current_channels, 3, padding=1, bias=False),
             nn.BatchNorm2d(current_channels),
             nn.ReLU(inplace=True)

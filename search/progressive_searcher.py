@@ -3,7 +3,7 @@ from core.ops.search_space import SearchSpace
 from hardware.predictor import HardwareConstraints, HardwarePredictor
 from typing import Dict, Tuple, List
 import numpy as np
-from evolutionary_searcher import EvolutionarySearcher
+from search.evolutionary_searcher import EvolutionarySearcher
 
 class ProgressiveSearcher: 
 
@@ -27,7 +27,7 @@ class ProgressiveSearcher:
             efficency = 1.0 / (1.0+costs['latency'] + costs['memory'] + costs['flops'])
 
             for layer in arch['layers']:
-                operations_performance([layer['op']].append(efficency))
+                operations_performance[layer['op']].append(efficency) 
         for op in operations_performance: 
             if operations_performance[op]:
                 self.operation_scores[op] = np.mean(operations_performance[op])

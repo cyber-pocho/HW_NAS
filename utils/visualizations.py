@@ -1,5 +1,5 @@
 import matplotlib.pyplot as plt
-from typing import List, Dict, Tuples
+from typing import List, Dict, Tuple
 
 class NASVisualizer:
     """Visualization tools for NAS results"""

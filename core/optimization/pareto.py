@@ -1,6 +1,6 @@
 
 from hardware.predictor import HardwarePredictor
-from typing import Dict, Tuples, List
+from typing import Dict, List
 import numpy as np
 
 

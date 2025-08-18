@@ -25,7 +25,7 @@ def run_complete_nas_pipeline():
     pareto_optimizer = ParetoOptimizer(hardware_predictor)
 
     #simulate multiple archs with different accuracy/efficency trade-offs
-    test_architectures = [evo_results['best_architectures'], prog_results['final_architectures']]
+    test_architectures = [evo_results['best_architecture'], prog_results['final_architecture']]
     test_accuracies = [0.85, 0.82]
 
     pareto_optimizer.update_pareto_front(test_architectures, test_accuracies)
