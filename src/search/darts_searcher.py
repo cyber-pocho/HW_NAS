@@ -138,6 +138,3 @@ class DARTSSearcher:
 #     print("Best architecture found", best_arch)
 # test()
 
-# cd /c/Users/Famil/Desktop/hw_nas
-# export PYTHONPATH=$PWD:$PYTHONPATH
-# python search/darts_searcher.py
