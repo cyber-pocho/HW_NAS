@@ -1,9 +1,9 @@
-from core.ops.search_space import SearchSpace
-from hardware.predictor import HardwareConstraints, HardwarePredictor
-from search.search_test import create_default_config
-from search.evolutionary_searcher import EvolutionarySearcher
-from search.progressive_searcher import ProgressiveSearcher
-from core.optimization.pareto import ParetoOptimizer
+from src.core.ops.search_space import SearchSpace
+from src.hardware.predictor import HardwareConstraints, HardwarePredictor
+from src.search.search_test import create_default_config
+from src.search.evolutionary_searcher import EvolutionarySearcher
+from src.search.progressive_searcher import ProgressiveSearcher
+from src.optimization.pareto import ParetoOptimizer
 
 def run_complete_nas_pipeline(): 
     config = create_default_config()
