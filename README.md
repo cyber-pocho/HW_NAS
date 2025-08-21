@@ -11,5 +11,7 @@ only torch used atm
 1. fix testing example for darts_searcher seems to be an issue with line53 - supernet.py
 2. Visualizations should be saved and displayed. (PENDING!) 
 3. Added Pareto Optimizr as well as evol-search and prog-search
+4. got the full pipeline to run and exported everything for optimization and visualization
 
-last update: aug 15, 2025
+
+last update: aug 20, 2025
