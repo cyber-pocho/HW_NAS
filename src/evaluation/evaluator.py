@@ -15,7 +15,7 @@ class NASEvaluator:
                               input_shape: Tuple[int, int, int, int] = (1,3,32,32)) -> Dict:
         """evaluation of a single architecture"""
         model = self.builder.build_model(architecture)
-        model_name = self._generate_model_name(model, input_shape, model_name)
+        model_name = self._generate_model_name(architecture)
 
         #benchmarking
         benchmark_result = self.benchmark.benchmark_model(model, input_shape, model_name)
@@ -32,7 +32,7 @@ class NASEvaluator:
         evaluation_result = {
             'architecture': architecture,
             'benchmark': benchmark_result,
-            'efficency_score': efficiency_score,
+            'efficiency_score': efficiency_score,
             'model': model
         }
 
@@ -71,16 +71,16 @@ class NASEvaluator:
                 correct += (predicted == targets),sum().item()
         return correct / total if total > 0 else 0.0
     
-    def _calculate_efficency_score(self, benchmark_result: BenchmarkResult) -> float:
+    def _calculate_efficiency_score(self, benchmark_result: BenchmarkResult) -> float:
         """Calculate composite efficency score"""
         #normalize metrics (the lower the params are the better
-        latency_score = 1.0 / (1.0+benchmark_result.inference_time_ms / 10.0)
+        latency_score = 1.0 / (1.0+benchmark_result.inference_time_ms/ 10.0)
         memory_score = 1.0 / (1.0+benchmark_result.memory_usage_mb/ 10.0)
-        flops_score = 1.0 / (1.0+benchmark_result.flops_score/1e6)
+        flops_score = 1.0 / (1.0+benchmark_result.flops/1e6)
 
         #composite score
-        efficency = (latency_score + memory_score + flops_score)/3.0
-        return efficency
+        efficiency_score = (latency_score + memory_score + flops_score)/3.0
+        return efficiency_score
     def compare_architectures(self, architectures: List[Dict], 
                               dataset_loader=None) -> Dict:
         """Compare multiple architectures"""
@@ -91,7 +91,7 @@ class NASEvaluator:
             result = self.evaluate_architecture(arch, dataset_loader)
             comparison_results.append(result)
 
-        comparison_results.sort(key=lambda x:x['efficency_score'], reverse=True)
+        comparison_results.sort(key=lambda x:x['efficiency_score'], reverse=True)
         return {
             'results': comparison_results,
             'best_architecture': comparison_results[0],
@@ -99,7 +99,7 @@ class NASEvaluator:
         }
     def _generate_comparison_summary(self, results: List[Dict]) -> Dict:
         """Generate summary statistics"""
-        latencies = [r['benchmark'].interference_time_ms for r in results]
+        latencies = [r['benchmark'].inference_time_ms for r in results]
         memories = [r['benchmark'].memory_usage_mb for r in results]
         accuracies = [r['benchmark'].accuracy for r in results]
         efficiencies = [r['efficiency_score'] for r in results]

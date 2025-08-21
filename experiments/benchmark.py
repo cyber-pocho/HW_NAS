@@ -9,13 +9,14 @@ import psutil
 import platform
 from pathlib import Path
 
+@dataclass
 class BenchmarkResult: 
     """Container for benchmark results"""
     model_name : str
     platform : str
     inference_time_ms:float
     memory_usage_mb:float
-    cp_usage_percent:float
+    cpu_usage_percent:float
     flops:int
     params:int
     accuracy:float = 0.0
@@ -94,21 +95,29 @@ class HardwareBenchmark:
     def _calculate_flops(self, model: nn.Module, input_tensor: torch.Tensor) -> int:
         """Simplified FLOP calculation"""
         total_flops = 0
-
+        
         def flop_count_hook(module, input, output):
             nonlocal total_flops
             if isinstance(module, nn.Conv2d):
+                # Conv2D FLOPs: output_elements * (kernel_elements * input_channels + bias)
                 output_elements = output.numel()
-                kernel_flops = module.kernel_size[0] * module.kernel_size[1]*module.in_channels
-                total_flops += module.in_feautures * model.out_features
+                kernel_flops = module.kernel_size[0] * module.kernel_size[1] * module.in_channels
+                total_flops += output_elements * kernel_flops
             elif isinstance(module, nn.Linear):
+                # Linear FLOPs: output_features * input_features
                 total_flops += module.in_features * module.out_features
+        
         hooks = []
         for module in model.modules():
             if isinstance(module, (nn.Conv2d, nn.Linear)):
                 hooks.append(module.register_forward_hook(flop_count_hook))
+        
+        # Forward pass to count FLOPs
         with torch.no_grad():
             model(input_tensor)
-        for hook in hooks: 
+        
+        # Remove hooks
+        for hook in hooks:
             hook.remove()
+        
         return total_flops

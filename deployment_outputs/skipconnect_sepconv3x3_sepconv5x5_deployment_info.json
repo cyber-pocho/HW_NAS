@@ -1,0 +1,45 @@
+{
+  "model_name": "skipconnect_sepconv3x3_sepconv5x5",
+  "architecture": {
+    "layers": [
+      {
+        "op": "skip_connect"
+      },
+      {
+        "op": "sep_conv_3x3"
+      },
+      {
+        "op": "sep_conv_5x5"
+      },
+      {
+        "op": "avg_pool_3x3"
+      },
+      {
+        "op": "sep_conv_3x3"
+      },
+      {
+        "op": "skip_connect"
+      }
+    ]
+  },
+  "input_shape": [
+    1,
+    3,
+    32,
+    32
+  ],
+  "output_files": {
+    "pytorch": "deployment_outputs\\skipconnect_sepconv3x3_sepconv5x5.pth",
+    "onnx": "deployment_outputs\\skipconnect_sepconv3x3_sepconv5x5.onnx",
+    "torchscript": "deployment_outputs\\skipconnect_sepconv3x3_sepconv5x5.py",
+    "quantized": "deployment_outputs\\skipconnect_sepconv3x3_sepconv5x5_quantized.pth",
+    "pruned": "deployment_outputs\\skipconnect_sepconv3x3_sepconv5x5_pruned.pth"
+  },
+  "deployment_instructions": {
+    "pytorch": "Load with torch.load() and model.load_state_dict()",
+    "onnx": "Use ONNX Runtime: ort.InferenceSession(model_path)",
+    "torchscript": "Load with torch.jit.load()",
+    "quantized": "Quantized PyTorch model for faster inference",
+    "pruned": "Pruned PyTorch model with reduced parameters"
+  }
+}

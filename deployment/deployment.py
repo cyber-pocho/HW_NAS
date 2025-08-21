@@ -4,8 +4,8 @@ from typing import Dict, List, Tuple
 import numpy
 import pathlib
 import json, time
-from export import ModelExporter
-from optimize import ModelOptimizer
+from .export import ModelExporter
+from .optimize import ModelOptimizer
 import torch.optim as optim
 
 
@@ -18,7 +18,7 @@ class DeploymentManager:
                                optimize: bool = True) -> Dict[str, str]:
         model_name = self._sanitize_model_name(architecture)
         outputs={}
-        torch_path = self.output_dir / f"{model_name.pth}"
+        torch_path = self.output_dir / f"{model_name}.pth"
         torch.save({
             'model_state_dict': model.state_dict(),
             'architecture': architecture,
