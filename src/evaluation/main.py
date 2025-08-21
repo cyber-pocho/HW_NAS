@@ -84,3 +84,60 @@ def complete_evaluation_pipeline():
         'deployment_files': deployment_files,
         'summary': summary
     }
+
+
+def integration_NAS_search(nas_results:Dict) -> Dict: 
+    architectures_to_evaluate = []
+    if 'evolutionary_results' in nas_results:
+        architectures_to_evaluate.append(nas_results['progressive_results']['best_architecture'])
+    if 'progressive_results' in nas_results:
+        architectures_to_evaluate.append(nas_results['progressive_results']['final_architecture'])
+    
+    if 'pareto_solutions' in nas_results:
+        for solution in nas_results['pareto_solutions']:
+            architectures_to_evaluate.append(solution['architecture'])
+    
+    search_space_config = {
+        'operations': ['sep_conv_3x3', 'sep_conv_5x5', 'dil_conv_3x3', 'avg_pool_3x3', 'skip_connect'],
+        'num_layers': 8,
+        'channels': [16, 32, 64],
+        'num_classes': 10
+    }
+
+    builder = ArchitectureBuilder(search_space_config)
+    benchmark = HardwareBenchmark(device='cpu')
+    evaluator = NASEvaluator(builder, benchmark)
+    deployment_mgr = DeploymentManager("./nas_deployment_outputs")
+    print(f"\n === Evaluating {len(architectures_to_evaluate)}NAS-discovered architectures ====")
+    comparison_results = evaluator.compare_architectures(architectures_to_evaluate)
+
+    #deploy top 3 architectures
+    deployed_models = []
+    for i, result in enumerate(comparison_results['results'][:3]):
+        print(f"\nDeploying architecture {i+1}/3...")
+        deployment_files = deployment_mgr.prepare_for_deployment(
+            result['model'], result['architecture']
+        )
+        deployed_models.append(
+            {
+                'rank': i+1,
+                'architecture': result['architecture'],
+                'benchmark': result['benchmark'],
+                'deployment_files': deployment_files
+
+            }
+        )
+    return {
+        'evaluated_architectures': comparison_results,
+        'deployed_models': deployed_models,
+        'deployment_summary': {
+            'total_evaluated': len(architectures_to_evaluate),
+            'total_deployed': len(deployed_models),
+            'best_efficiency': comparison_results['results'][0]['efficiency_score'],
+            'deployment_formats': ['pytorch', 'onnx', 'torchscript', 'quantized', 'pruned']
+        }
+    }
+if __name__ == "__main__":
+    results = complete_evaluation_pipeline()
+    print("\n=== Pipeline Complete ===")
+    print("Check './deployment_outputs' directory for exported models")
