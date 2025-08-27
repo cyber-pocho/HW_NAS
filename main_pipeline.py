@@ -2,6 +2,7 @@ import yaml
 from pathlib import Path
 import torch
 import torch.nn as nn
+import argparse
 import json
 import numpy as np
 from .src.search.search_space import SearchSpace
@@ -16,7 +17,7 @@ from .experiments.arch_builder import ArchitectureBuilder
 from .experiments.benchmark import HardwareBenchmark, BenchmarkResults
 from .src.evaluation.evaluator import NASEvaluator
 from .deployment.deployment import DeploymentManager
-from .config.search_config import create_default_config, prepare_datasets
+from .config.search_config import create_default_config, prepare_datasets, load_config, save_config
 import time
 
 class NASOrchestrator: 
@@ -337,6 +338,7 @@ class DeploymentOrchestrator:
         }
     
 #MAIN EXECUTION FUNCTION
+
 def run_search_mode(config: dict):
     """Run NAS search mode"""
     print("=== NAS SEARCH MODE ===")
@@ -432,3 +434,56 @@ def run_quick_demo():
         'evaluation_results': results['evaluation_results'],
         'deployment_results': deployment_results
     }
+
+
+def main():
+    parser = argparse.ArgumentParser(description='Hardware-Aware Neural Architecture Search')
+    parser.add_argument('--config', type=str, help='Configuration file path')
+    parser.add_argument('--mode', choices=['search', 'evaluate', 'deploy'], 
+                       default='search', help='Execution mode')
+    parser.add_argument('--results', type=str, help='Results file for evaluate/deploy modes')
+    parser.add_argument('--quick-demo', action='store_true', 
+                       help='Run quick demonstration')
+    parser.add_argument('--output-dir', type=str, default='./results',
+                       help='Output directory')
+    
+    args = parser.parse_args()
+    
+    if args.quick_demo:
+        return run_quick_demo()
+    
+    # Load configuration
+    config = load_config(args.config)
+    config['experiment']['output_dir'] = args.output_dir
+    
+    # Save config to output directory
+    save_config(config, args.output_dir)
+    
+    # Run specified mode
+    if args.mode == 'search':
+        return run_search_mode(config)
+    elif args.mode == 'evaluate':
+        if not args.results:
+            raise ValueError("--results file required for evaluate mode")
+        return run_evaluate_mode(config, args.results)
+    elif args.mode == 'deploy':
+        if not args.results:
+            raise ValueError("--results file required for deploy mode")
+        return run_deploy_mode(config, args.results)
+
+if __name__ == "__main__":
+    # Example of programmatic usage
+    print("Hardware-Aware Neural Architecture Search System")
+    print("=" * 50)
+    
+    # You can run directly or use command line
+    try:
+        results = main()
+        print("\n" + "=" * 50)
+        print("Execution completed successfully!")
+    except Exception as e:
+        print(f"Error: {e}")
+        print("\nFor help, run: python main_nas.py --help")
+        
+    # Or run quick demo directly
+    # results = run_quick_demo()
